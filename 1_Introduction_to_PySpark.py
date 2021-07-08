@@ -18,6 +18,8 @@ sc = SparkContext(master="local", appName="Spark Notes")
 spark = SparkSession.builder.getOrCreate()
 print(sc)
 print(sc.version)
+print(sc.pythonVer)
+print(sc.master)
 
 ##
 # Read a data source into Spark DataFrame
@@ -150,4 +152,3 @@ model = lr.fit(training)
 test_results = model.transform(test)
 # Evaluate the predictions
 print(evaluator.evaluate(test_results))
-
