@@ -1,5 +1,10 @@
+# Big Data concepts and Terminology
+# Clustered computing:      Collection of resources of multiple machines
+# Parallel computing:       Simultaneous computation
+# Distributed computing:    Collection of nodes (networked computers) that run in parallel
+# Batch processing:         Breaking the job into small pieces and running them on individual machines
+# Real-time processing:     Immediate processing of data
 import numpy as np
-
 ## Spark imports
 # SparkContext() class constructor creates a connection to a cluster.
 from pyspark import SparkContext
