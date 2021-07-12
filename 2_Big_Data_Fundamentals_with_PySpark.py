@@ -1,12 +1,13 @@
 ##
 from pyspark import SparkContext
+from pyspark.mllib.recommendation import Rating, ALS
 
 ##
 sc = SparkContext(master="local", appName="Spark Notes")
 
 ## #########################
 # Python lambda functions ##
-############################
+# ###########################
 test_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 print(list(map(lambda x: x * x, test_list)))
 print(list(filter(lambda x: (x % 2 == 0), test_list)))
@@ -18,9 +19,7 @@ del test_list
 # RDDs from Parallelized collections
 RDD = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 # RDDs from External Datasets (Files in HDFS, Objects in Amazon S3 bucket, lines in a text file) AND Partitions
-fileRDD = sc.textFile("C:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/ratings.csv")
-# fileRDD_part = sc.textFile("C:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/ratings.csv", minPartitions=5)
-# print("Number of partitions in fileRDD_part is", fileRDD_part.getNumPartitions())
+fileRDD = sc.textFile("D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/ratings.csv")
 
 ## #######################################################
 # Basic RDD Transformations: Map, Filter,Flatmap, Union ##
@@ -37,6 +36,8 @@ print(RDD.collect())
 print(RDD.take(2))
 print(RDD.first())
 print(RDD.count())
+print(RDD.reduce(lambda x, y: x + y))
+print(RDD.sum())
 
 ## #####################################
 # Creating pair RDDs (we need tuples) ##
@@ -50,7 +51,46 @@ RDD = sc.parallelize(['Sam 23', 'Mary 23', 'Peter 25']).map(lambda s: (s.split('
 RDD = sc.parallelize([(1, 2), (3, 4), (3, 6), (4, 5)])
 print(RDD.reduceByKey(lambda x, y: x + y).collect())
 print(RDD.sortByKey(ascending=False).collect())
-print(RDD.groupByKey().collect())
 print(RDD.join(RDD).collect())
+total = RDD.countByKey()
+for k, v in total.items():
+    print("key", k, "has", v, "counts")
+grouped = RDD.groupByKey()
+for key, list_val in grouped.collect():
+    print(key, list(list_val))
+print(sc.parallelize([(1, 2), (3, 4)]).collectAsMap())
+
+## ############################################
+# Machine Learning - Collaborative Filtering ##
+# #############################################
+# Theory: https://www.youtube.com/watch?v=h9gpufJFF-0&t=30s&ab_channel=ArtificialIntelligence-AllinOne
+
+# Tranformations - Data preparation
+ratings = fileRDD.map(lambda r: r.split(','))
+ratings = ratings.map(
+    lambda line: Rating(int(line[0]), int(line[1]), float(line[2])))    # dataset final form list of lists
+training_data, test_data = ratings.randomSplit([0.8, 0.2])              # splitting the data
+test_data = test_data.map(lambda p: (p[0], p[1]))                       # removing the rate column from test data
+
+# Fitting the ALS model on the training data
+model = ALS.train(training_data, rank=10, iterations=10)
+
+# Predict
+predictions = model.predictAll(test_data)
+
+# Model evaluation using MSE
+# Prepare ratings data
+rates = ratings.map(lambda r: ((r[0], r[1]), r[2]))
+
+# Prepare predictions data
+preds = predictions.map(lambda r: ((r[0], r[1]), r[2]))
+
+# Join the ratings data with predictions data
+rates_and_preds = rates.join(preds)
+
+# Calculate MSE: Average value of the square of (actual rating - predicted rating)
+MSE = rates_and_preds.map(lambda r: (r[1][0] - r[1][1])**2).mean()
+print("Mean Squared Error of the model for the test data = {:.2f}".format(MSE))
+
 ##
 

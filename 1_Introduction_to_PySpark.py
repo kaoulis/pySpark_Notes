@@ -29,17 +29,17 @@ print(sc.master)
 ##
 # Read a data source into Spark DataFrame
 airports = spark.read.csv(
-    path="C:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/airports.csv",
+    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/airports.csv",
     header="true",
     inferSchema=True  # It understands the dtypes!
 )
 flights = spark.read.csv(
-    path="C:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/flights.csv",
+    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/flights.csv",
     header="true",
     inferSchema=True
 )
 planes = spark.read.csv(
-    path="C:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/planes.csv",
+    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/planes.csv",
     header="true",
     inferSchema=True
 )
@@ -50,6 +50,7 @@ print(airports.show())
 pd_airports = airports.toPandas()
 airports = spark.createDataFrame(pd_airports)
 print(pd_airports)
+print(airports.show())
 
 ##
 # The Spark DataFrames are stored locally, not in the SparkSession catalog.
@@ -113,6 +114,7 @@ print((model_data.count(), len(model_data.columns)))
 model_data = model_data.filter(
     "arr_delay is not NULL and dep_delay is not NULL and air_time is not NULL and plane_year is not NULL")
 # model_data.na.drop()
+# model_data = model_data.dropDuplicates()
 print((model_data.count(), len(model_data.columns)))
 
 ##
@@ -157,3 +159,5 @@ model = lr.fit(training)
 test_results = model.transform(test)
 # Evaluate the predictions
 print(evaluator.evaluate(test_results))
+##
+
