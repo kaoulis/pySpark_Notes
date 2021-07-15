@@ -20,6 +20,8 @@ people_schema = StructType([
     StructField('age', IntegerType(), False),
     StructField('city', StringType(), False)
 ])
+##
+# VM VS CONTAINERS!!!???
 ## ########################
 # Split - getItem - Size ##
 # #########################

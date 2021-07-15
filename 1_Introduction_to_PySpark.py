@@ -29,17 +29,17 @@ print(sc.master)
 ##
 # Read a data source into Spark DataFrame
 airports = spark.read.csv(
-    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/airports.csv",
+    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/chapter1/airports.csv",
     header="true",
     inferSchema=True  # It understands the dtypes!
 )
 flights = spark.read.csv(
-    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/flights.csv",
+    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/chapter1/flights.csv",
     header="true",
     inferSchema=True
 )
 planes = spark.read.csv(
-    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/planes.csv",
+    path="D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/chapter1/planes.csv",
     header="true",
     inferSchema=True
 )
@@ -75,9 +75,12 @@ flights = flights.withColumn("duration_hours", flights.air_time / 60)
 # Filtering, Selecting, Aggregating
 flights.filter("distance > 1000").show()
 flights.filter(flights.distance > 1000).show()
+flights.where(flights.distance > 1000).show()
+flights.where(flights['distance'] > 1000).show()
 
 flights.select("tailnum", "origin", "dest").show()
 flights.select(flights.origin, flights.dest, flights.carrier).show()
+flights.select(["tailnum", "origin", "dest"]).show()
 
 # Find the shortest flight from PDX in terms of distance
 flights.filter(flights.origin == "PDX").groupBy().min("distance").show()
