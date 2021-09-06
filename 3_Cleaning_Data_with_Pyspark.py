@@ -81,6 +81,7 @@ voter_df.unpersist()
 # - More objects better than larger ones ~ex. airport_df = spark.read.csv('airports-*.txt.gz')
 # - Spark performs better if objects are of similar size
 # - A well-defined schema will drastically improve import performance + provides validation
+# - Use parquet format ~ It is column wise ~ Structured defined schema
 
 ## ###############################################################################################
 # Optimization by limiting shuffling ~ moving data around to various workers to complete a task ##
