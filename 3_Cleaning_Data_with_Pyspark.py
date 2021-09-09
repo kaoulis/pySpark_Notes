@@ -22,6 +22,7 @@ people_schema = StructType([
 ])
 ##
 # VM VS CONTAINERS!!!???
+# https://www.youtube.com/watch?v=cjXI-yxqGTI&ab_channel=IBMCloud
 ## ########################
 # Split - getItem - Size ##
 # #########################
