@@ -7,7 +7,7 @@ import pyspark.sql.functions as F
 ##
 spark = SparkSession.builder.getOrCreate()
 ##
-voter_df = spark.read.csv('C:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/chapter3/DallasCouncilVoters.csv',
+voter_df = spark.read.csv('D:/Users/k_chi/PycharmProjects/pySpark_Notes/datasets/chapter3/DallasCouncilVoters.csv',
                           header=True)
 ## ###############
 # Spark Schemas ##
@@ -27,9 +27,13 @@ people_schema = StructType([
 # Split - getItem - Size ##
 # #########################
 voter_df = voter_df.dropna(subset='VOTER_NAME')
+print(voter_df.show())
 voter_df = voter_df.withColumn('splits', F.split(voter_df.VOTER_NAME, '\s'))
+print(voter_df.show())
 voter_df = voter_df.withColumn('first_name', voter_df.splits.getItem(0))
+print(voter_df.show())
 voter_df = voter_df.withColumn('last_name', voter_df.splits.getItem(F.size(voter_df.splits) - 1))
+print(voter_df.show())
 
 ## ##########################
 # If Else ~ When Otherwise ##
@@ -54,11 +58,13 @@ udfFirstAndMiddle = F.udf(getFirstAndMiddle, StringType())
 
 # Create a new column using your UDF
 voter_df = voter_df.withColumn('first_and_middle_name', udfFirstAndMiddle(voter_df.splits))
+print(voter_df.show())
 
 ## ####################
 # Adding an ID Field ##
 # #####################
 voter_df = voter_df.withColumn('ROW_ID', F.monotonically_increasing_id())
+print(voter_df.show())
 
 ## #####################
 # Caching a DataFrame ##
